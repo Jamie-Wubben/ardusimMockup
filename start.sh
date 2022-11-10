@@ -1,2 +1,2 @@
 #!/bin/sh
-python copterController.py
+python3 copterController.py
