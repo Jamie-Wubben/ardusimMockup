@@ -11,5 +11,6 @@ RUN pip install zmq
 WORKDIR /workdir
 RUN git clone https://github.com/Jamie-Wubben/ardusimMockup.git
 WORKDIR /workdir/ardusimMockup
-RUN chmod +x /start.sh
+RUN chmod +x ./start.sh
+RUN chmod +x ./stop.sh
 CMD ./start.sh

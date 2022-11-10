@@ -1,2 +1,6 @@
 #!/bin/sh
-python3 copterController.py
+for script in *.py
+do
+	python3 $script &
+	echo $! >> ./pid.txt
+done
