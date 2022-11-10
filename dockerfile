@@ -8,7 +8,8 @@ RUN apk add --no-cache py-pip
 RUN apk add --no-cache openjdk17
 RUN apk add git
 RUN pip install zmq
-RUN start.sh
 WORKDIR /workdir
 RUN git clone https://github.com/Jamie-Wubben/ardusimMockup.git
 WORKDIR /workdir/ardusimMockup
+RUN chmod +x /start.sh
+CMD ./start.sh
