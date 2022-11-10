@@ -5,3 +5,5 @@ do
 	echo "killing $line"
 	kill -9 $line
 done < "pid.txt"
+
+rm pid.txt
