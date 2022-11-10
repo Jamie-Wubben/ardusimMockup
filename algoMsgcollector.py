@@ -1,12 +1,12 @@
 import zmq
+import json
 
 context = zmq.Context()
 socket_algorithms = context.socket(zmq.PULL)
 socket_algorithms.bind("tcp://*:10003")
 
-socket_application = context.socket(zmq.PAIR)
-socket_application.bind("tcp://*:10002")
-
+socket_publish = context.socket(zmq.PUB)
+socket_publish.bind("tcp://*:10002")
 
 def check_valid(msg):
 	return {"source","msg_type","data"}.issubset(msg)
@@ -31,7 +31,7 @@ while running:
 
 	match msg_type:
 		case "internal":
-			socket_application.send_json(msg)
+			socket_publish.send_string("algoCollector " + json.dumps(msg))
 		case "multi_uav":
 			handle_multi_uav_msg()
 		case "master_slave":

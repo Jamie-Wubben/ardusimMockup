@@ -1,4 +1,5 @@
 import zmq
+import json
 from math import sqrt
 
 addr_copter = "tcp://localhost:10001"
@@ -63,15 +64,18 @@ if __name__ == '__main__':
     socket_copter = context.socket(zmq.PAIR)
     socket_copter.connect(addr_copter)
 
-    socket_algo = context.socket(zmq.PAIR)
+    socket_algo = context.socket(zmq.SUB)
     socket_algo.connect(addr_algo)
+    socket_algo.setsockopt(zmq.SUBSCRIBE, b'')
 
     socket_copter.send_string("takeoff")
     running = True
     while running:
         try:
-            msg = socket_algo.recv_json(flags=zmq.NOBLOCK)
-            handle_msg(msg)
+            msg = socket_algo.recv_string(flags=zmq.NOBLOCK)
+            msg_json = json.loads(msg.split(maxsplit=1)[1])
+            
+            handle_msg(msg_json)
         except zmq.ZMQError as e:
             if e.errno == zmq.EAGAIN:
                 pass # no message

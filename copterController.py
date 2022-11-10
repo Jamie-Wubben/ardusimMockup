@@ -82,10 +82,20 @@ class Copter(DroneControllerInterface):
     def publishStatus(self):
         socket = self.context.socket(zmq.PUB)
         socket.bind(addr_status)
-
         while self.running:
-            msg = "Status_UAV " + str(self.numUAV) + " " + str(self.x) + " " + str(self.y)+ " " + str(self.z)
-            socket.send_string(msg)
+            data = {
+                "source": "Drone/copter",
+                "type":"internal",
+                "data":{
+                    "msg":"status",
+                    "vehicle_type":"drone",
+                    "id":self.numUAV,
+                    "pos_x":self.x,
+                    "pos_y":self.y,
+                    "pos_z":self.z
+                }
+            }
+            socket.send_json(data)
             time.sleep(1)
 
 if __name__ == '__main__':

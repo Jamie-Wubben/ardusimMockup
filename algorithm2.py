@@ -2,23 +2,23 @@ import zmq
 from math import sqrt
 
 context = zmq.Context()
-numUAV = "1"
+numUAV = 1
 socket_status_uav = context.socket(zmq.SUB)
 socket_status_uav.connect("tcp://localhost:10000")
-socket_status_uav.setsockopt_string(zmq.SUBSCRIBE, "Status_UAV")
+socket_status_uav.setsockopt(zmq.SUBSCRIBE, b'')
 
 socket_algo = context.socket(zmq.PUSH)
 socket_algo.connect("tcp://localhost:10003")
 
 minimal_distance = 5
 location_UAVs = {}
-location_UAVs["0"] = [50,50,10]
+location_UAVs[0] = [50,50,10]
 
 def update_location(data):
-	numUAV = data[1]
-	x = float(data[2])
-	y = float(data[3])
-	z = float(data[4])
+	numUAV = data["id"]
+	x = data["pos_x"]
+	y = data["pos_y"]
+	z = data["pos_z"]
 	loc = [x,y,z]
 	location_UAVs[numUAV] = loc
 
@@ -34,11 +34,12 @@ def calculate_distance(loc1, loc2):
 running = True
 counter = 0
 while running:
-	msg = socket_status_uav.recv_string()
-	data = msg.split()
-	if len(data) == 5:
+	msg = socket_status_uav.recv_json()
+	data = msg["data"]
+
+	if data["msg"] == "status":
 		update_location(data)
-	
+
 	if numUAV in location_UAVs.keys():
 		#basemessage
 		msg = {
@@ -57,4 +58,3 @@ while running:
 
 				print(msg["data"])
 				socket_algo.send_json(msg)
-
